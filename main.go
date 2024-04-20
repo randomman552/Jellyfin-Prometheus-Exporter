@@ -4,10 +4,14 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/urfave/cli/v2"
+
+	"jellyfin-exporter/metrics"
 )
 
 func main() {
@@ -39,6 +43,22 @@ func main() {
 }
 
 func run(c *cli.Context) error {
+	// Construct prometheus registry
+	registry := prometheus.NewRegistry()
+
+	// Register collectors
+	collector := metrics.NewCounterCollector()
+
+	registry.MustRegister(collector)
+
+	// Start gather as a background operation
+	go func() {
+		for {
+			registry.Gather()
+			time.Sleep(2 * time.Second)
+		}
+	}()
+
 	http.Handle("/metrics", promhttp.Handler())
 
 	log.Print("Listening on port 2112")
