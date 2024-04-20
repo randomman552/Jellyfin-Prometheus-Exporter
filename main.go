@@ -2,9 +2,11 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/urfave/cli/v2"
 )
 
@@ -37,6 +39,9 @@ func main() {
 }
 
 func run(c *cli.Context) error {
-	print("Hello World!")
+	http.Handle("/metrics", promhttp.Handler())
+
+	log.Print("Listening on port 2112")
+	http.ListenAndServe(":2112", nil)
 	return nil
 }
