@@ -55,6 +55,7 @@ func run(c *cli.Context) error {
 	collectors := []prometheus.Collector{
 		collectors.NewCounterCollector(),
 		collectors.NewSessionsCollector(apiClient),
+		collectors.NewLibraryCollector(apiClient),
 	}
 
 	registry.MustRegister(collectors...)
