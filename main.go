@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -45,18 +44,20 @@ func main() {
 }
 
 func run(c *cli.Context) error {
+	// Create Jellyfin API client
 	jellyfinUrl := c.String("jellyfin.url")
 	jellyfinToken := c.String("jellyfin.api_key")
 	apiClient := api.NewJellyfinClient(jellyfinUrl, jellyfinToken)
+
 	registry := prometheus.NewRegistry()
 
-	sessions := apiClient.GetSessions()
-	fmt.Print(sessions)
-
 	// Register collectors
-	collector := collectors.NewCounterCollector()
+	collectors := []prometheus.Collector{
+		collectors.NewCounterCollector(),
+		collectors.NewSessionsCollector(apiClient),
+	}
 
-	registry.MustRegister(collector)
+	registry.MustRegister(collectors...)
 
 	// Start gather as a background operation
 	go func() {
