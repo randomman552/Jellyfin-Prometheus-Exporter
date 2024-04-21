@@ -31,3 +31,10 @@ type JellyfinSessionNowPlayingItem struct {
 	Type      string `json:"Type"`
 	MediaType string `json:"MediaType"`
 }
+
+// Type representing a Virtual Folder returned from the Jellyfin API
+type JellyfinVirtualFolder struct {
+	Name           string `json:"Name"`
+	CollectionType string `json:"CollectionType"`
+	ItemId         string `json:"ItemId"`
+}

@@ -45,7 +45,7 @@ func (c *JellyfinClient) GetSessions() *[]JellyfinSession {
 	response, err := client.Do(request)
 
 	if err != nil {
-		log.Println(err)
+		panic(err)
 	}
 
 	// Decode response
@@ -60,4 +60,28 @@ func (c *JellyfinClient) GetSessions() *[]JellyfinSession {
 	}
 
 	return sessions
+}
+
+// Get a list of VirtualFolders from the Jellyfin API `/Library/VirtualFolders` endpoint
+func (c *JellyfinClient) GetVirtualFolders() *[]JellyfinVirtualFolder {
+	client := &http.Client{}
+	request := c.NewRequest("GET", "/Library/VirtualFolders", nil)
+
+	response, err := client.Do(request)
+
+	if err != nil {
+		panic(err)
+	}
+
+	var folders *[]JellyfinVirtualFolder
+	buf := bytes.Buffer{}
+	buf.ReadFrom(response.Body)
+
+	err = json.Unmarshal(buf.Bytes(), folders)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return folders
 }
