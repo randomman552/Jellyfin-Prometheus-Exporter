@@ -10,16 +10,18 @@ import (
 type SessionsCollector struct {
 	Client api.JellyfinClient
 
-	ActiveSessions prometheus.Gauge
+	ActiveSessions *prometheus.GaugeVec
 }
 
 func NewSessionsCollector(client *api.JellyfinClient) *SessionsCollector {
 	return &SessionsCollector{
 		Client: *client,
 
-		ActiveSessions: promauto.NewGauge(prometheus.GaugeOpts{
+		ActiveSessions: promauto.NewGaugeVec(prometheus.GaugeOpts{
 			Name: "jellyfin_active_sessions",
 			Help: "The number of active Jellyfin sessions",
+		}, []string{
+			"client",
 		}),
 	}
 }
@@ -29,12 +31,18 @@ func (c *SessionsCollector) Describe(ch chan<- *prometheus.Desc) {
 }
 
 func (c *SessionsCollector) Collect(metrics chan<- prometheus.Metric) {
-	// Create metrics
-	metrics <- prometheus.MustNewConstMetric(c.ActiveSessions.Desc(), prometheus.GaugeValue, 0)
-
 	// Get data
 	sessions := c.Client.GetSessions()
 
-	// Update metrics
-	c.ActiveSessions.Set(float64(len(*sessions)))
+	c.CollectActiveSessionData(*sessions)
+}
+
+func (c *SessionsCollector) CollectActiveSessionData(sessions []api.JellyfinSession) {
+	grouped := GroupByProperty(sessions, func(s api.JellyfinSession) string {
+		return s.Client
+	})
+
+	for key, value := range grouped {
+		c.ActiveSessions.WithLabelValues(key).Set(float64(len(value)))
+	}
 }
