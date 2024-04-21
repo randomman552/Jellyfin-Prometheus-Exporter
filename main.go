@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,7 +12,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/urfave/cli/v2"
 
-	"jellyfin-exporter/metrics"
+	"jellyfin-exporter/api"
+	"jellyfin-exporter/collectors"
 )
 
 func main() {
@@ -43,11 +45,16 @@ func main() {
 }
 
 func run(c *cli.Context) error {
-	// Construct prometheus registry
+	jellyfinUrl := c.String("jellyfin.url")
+	jellyfinToken := c.String("jellyfin.api_key")
+	apiClient := api.NewJellyfinClient(jellyfinUrl, jellyfinToken)
 	registry := prometheus.NewRegistry()
 
+	sessions := apiClient.GetSessions()
+	fmt.Print(sessions)
+
 	// Register collectors
-	collector := metrics.NewCounterCollector()
+	collector := collectors.NewCounterCollector()
 
 	registry.MustRegister(collector)
 
