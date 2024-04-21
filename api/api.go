@@ -77,7 +77,7 @@ func (c *JellyfinClient) GetVirtualFolders() *[]JellyfinVirtualFolder {
 	buf := bytes.Buffer{}
 	buf.ReadFrom(response.Body)
 
-	err = json.Unmarshal(buf.Bytes(), folders)
+	err = json.Unmarshal(buf.Bytes(), &folders)
 
 	if err != nil {
 		panic(err)
