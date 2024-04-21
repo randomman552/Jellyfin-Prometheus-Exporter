@@ -15,8 +15,8 @@ type JellyfinSession struct {
 	HasCustomDeviceName   bool     `json:"HasCustomDeviceName"`
 	PlayableMediaTpes     []string `json:"PlayableMediaTpes"`
 
-	PlayState      JellyfinSessionPlayState      `json:"PlayState"`
-	NowPlayingItem JellyfinSessionNowPlayingItem `json:"NowPlayingItem"`
+	PlayState      *JellyfinSessionPlayState      `json:"PlayState"`
+	NowPlayingItem *JellyfinSessionNowPlayingItem `json:"NowPlayingItem"`
 }
 
 type JellyfinSessionPlayState struct {
@@ -25,6 +25,9 @@ type JellyfinSessionPlayState struct {
 }
 
 type JellyfinSessionNowPlayingItem struct {
-	Id   string `json:"Id"`
-	Name string `json:"Name"`
+	Id        string `json:"Id"`
+	Name      string `json:"Name"`
+	Container string `json:"Container"`
+	Type      string `json:"Type"`
+	MediaType string `json:"MediaType"`
 }

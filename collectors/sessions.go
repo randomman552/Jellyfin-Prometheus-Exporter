@@ -2,6 +2,7 @@ package collectors
 
 import (
 	"jellyfin-exporter/api"
+	"strings"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -11,6 +12,7 @@ type SessionsCollector struct {
 	Client api.JellyfinClient
 
 	ActiveSessions *prometheus.GaugeVec
+	Streams        *prometheus.GaugeVec
 }
 
 func NewSessionsCollector(client *api.JellyfinClient) *SessionsCollector {
@@ -23,6 +25,15 @@ func NewSessionsCollector(client *api.JellyfinClient) *SessionsCollector {
 		}, []string{
 			"client",
 		}),
+		Streams: promauto.NewGaugeVec(prometheus.GaugeOpts{
+			Name: "jellyfin_active_streams",
+			Help: "The number of active streams running from Jellyfin",
+		}, []string{
+			"name",
+			"container",
+			"type",
+			"mediaType",
+		}),
 	}
 }
 
@@ -30,13 +41,16 @@ func (c *SessionsCollector) Describe(ch chan<- *prometheus.Desc) {
 	prometheus.DescribeByCollect(c, ch)
 }
 
+// Collect metrics from sessions returned from the Jellyfin API
 func (c *SessionsCollector) Collect(metrics chan<- prometheus.Metric) {
 	// Get data
 	sessions := c.Client.GetSessions()
 
 	c.CollectActiveSessionData(*sessions)
+	c.CollectStreamData(*sessions)
 }
 
+// Collect data about sessions
 func (c *SessionsCollector) CollectActiveSessionData(sessions []api.JellyfinSession) {
 	grouped := GroupByProperty(sessions, func(s api.JellyfinSession) string {
 		return s.Client
@@ -44,5 +58,26 @@ func (c *SessionsCollector) CollectActiveSessionData(sessions []api.JellyfinSess
 
 	for key, value := range grouped {
 		c.ActiveSessions.WithLabelValues(key).Set(float64(len(value)))
+	}
+}
+
+// Collect information about streams
+func (c *SessionsCollector) CollectStreamData(sessions []api.JellyfinSession) {
+	sessions = Filter(sessions, func(s api.JellyfinSession) bool {
+		return s.NowPlayingItem != nil
+	})
+	streams := Map(sessions, func(s api.JellyfinSession) api.JellyfinSessionNowPlayingItem {
+		return *s.NowPlayingItem
+	})
+
+	for _, stream := range streams {
+		containers := strings.Split(stream.Container, ",")
+
+		c.Streams.WithLabelValues(
+			stream.Name,
+			containers[0],
+			stream.Type,
+			stream.MediaType,
+		).Set(1)
 	}
 }
