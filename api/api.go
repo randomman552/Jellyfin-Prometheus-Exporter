@@ -115,3 +115,28 @@ func (c *JellyfinClient) GetItems(parentId string) JellyfinItemsResponse {
 
 	return *itemsResponse
 }
+
+// Get a list of all users from the Jellyfin API
+func (c *JellyfinClient) GetUsers() []JellyfinUser {
+	url := "/Users"
+	client := &http.Client{}
+	request := c.NewRequest("GET", url, nil)
+
+	response, err := client.Do(request)
+
+	if err != nil {
+		panic(err)
+	}
+
+	var users *[]JellyfinUser
+	buf := bytes.Buffer{}
+	buf.ReadFrom(response.Body)
+
+	err = json.Unmarshal(buf.Bytes(), &users)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return *users
+}

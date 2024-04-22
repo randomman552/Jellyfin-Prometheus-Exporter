@@ -55,3 +55,13 @@ type JellyfinItem struct {
 	Container string `json:"Container"`
 	Type      string `json:"Type"`
 }
+
+// A user returned from Jellyfins API
+type JellyfinUser struct {
+	Name   string `json:"Name"`
+	Policy struct {
+		IsAdministrator        bool   `json:"IsAdministrator"`
+		IsDisabled             bool   `json:"IsDisabled"`
+		AuthenticationProvider string `json:"AuthenticationProviderId"`
+	} `json:"Policy"`
+}
