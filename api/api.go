@@ -85,3 +85,27 @@ func (c *JellyfinClient) GetVirtualFolders() *[]JellyfinVirtualFolder {
 
 	return folders
 }
+
+// Get items belonging to the VirtualFolder with the given Id
+func (c *JellyfinClient) GetItems(parentId string) *JellyfinItemsResponse {
+	client := &http.Client{}
+	request := c.NewRequest("GET", "/Items", nil)
+
+	response, err := client.Do(request)
+
+	if err != nil {
+		panic(err)
+	}
+
+	var itemsResponse *JellyfinItemsResponse
+	buf := bytes.Buffer{}
+	buf.ReadFrom(response.Body)
+
+	err = json.Unmarshal(buf.Bytes(), &itemsResponse)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return itemsResponse
+}
