@@ -19,7 +19,7 @@ func NewUsersCollector(client *api.JellyfinClient) *UsersCollector {
 		Client: *client,
 
 		Users: promauto.NewGaugeVec(prometheus.GaugeOpts{
-			Name: "jellyfin_users",
+			Name: "jellyfin_user_accounts",
 			Help: "The number of Jellyfin users",
 		}, []string{
 			"authProvider",
