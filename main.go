@@ -64,7 +64,7 @@ func run(c *cli.Context) error {
 	go func() {
 		for {
 			registry.Gather()
-			time.Sleep(2 * time.Second)
+			time.Sleep(60 * time.Second)
 		}
 	}()
 
