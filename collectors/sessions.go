@@ -29,8 +29,8 @@ func NewSessionsCollector(client *api.JellyfinClient) *SessionsCollector {
 			Name: "jellyfin_active_streams",
 			Help: "The number of active streams running from Jellyfin",
 		}, []string{
+			"codec",
 			"name",
-			"container",
 			"type",
 			"mediaType",
 			"paused",
@@ -47,6 +47,9 @@ func (c *SessionsCollector) Describe(ch chan<- *prometheus.Desc) {
 func (c *SessionsCollector) Collect(metrics chan<- prometheus.Metric) {
 	// Get data
 	sessions := c.Client.GetSessions()
+
+	c.ActiveSessions.Reset()
+	c.Streams.Reset()
 
 	c.CollectActiveSessionData(sessions)
 	c.CollectStreamData(sessions)
@@ -65,17 +68,31 @@ func (c *SessionsCollector) CollectActiveSessionData(sessions []api.JellyfinSess
 
 // Collect information about streams
 func (c *SessionsCollector) CollectStreamData(sessions []api.JellyfinSession) {
+	// Only show sessions that are playing
 	sessions = Filter(sessions, func(s api.JellyfinSession) bool {
 		return s.NowPlayingItem != nil
 	})
+
 	for _, session := range sessions {
-		stream := session.NowPlayingItem
+		item := session.NowPlayingItem
+		codec := "unknown"
+
+		// If we are dealing with video, try to determine the codec
+		if item.MediaType == "Video" {
+			videoStreams := Filter(item.MediaStreams, func(s api.JellyfinMediaStream) bool {
+				return s.Type == "Video"
+			})
+
+			if len(videoStreams) > 0 {
+				codec = videoStreams[0].Codec
+			}
+		}
 
 		c.Streams.WithLabelValues(
-			stream.Name,
-			stream.Container,
-			stream.Type,
-			stream.MediaType,
+			codec,
+			item.Name,
+			item.Type,
+			item.MediaType,
 			strconv.FormatBool(session.PlayState.IsPaused),
 			session.PlayState.PlayMethod,
 		).Set(1)
