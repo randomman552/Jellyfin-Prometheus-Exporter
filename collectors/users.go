@@ -11,14 +11,14 @@ import (
 type UsersCollector struct {
 	Client api.JellyfinClient
 
-	Users *prometheus.GaugeVec
+	UsersGauge *prometheus.GaugeVec
 }
 
 func NewUsersCollector(client *api.JellyfinClient) *UsersCollector {
 	return &UsersCollector{
 		Client: *client,
 
-		Users: promauto.NewGaugeVec(prometheus.GaugeOpts{
+		UsersGauge: promauto.NewGaugeVec(prometheus.GaugeOpts{
 			Name: "jellyfin_user_accounts",
 			Help: "The number of Jellyfin users",
 		}, []string{
@@ -37,7 +37,7 @@ func (c *UsersCollector) Describe(ch chan<- *prometheus.Desc) {
 func (c *UsersCollector) Collect(metrics chan<- prometheus.Metric) {
 	users := c.Client.GetUsers()
 
-	c.Users.Reset()
+	c.UsersGauge.Reset()
 
 	// First group by auth provider
 	groupedByAuthProvider := GroupByProperty(users, func(user api.JellyfinUser) string {
@@ -57,7 +57,7 @@ func (c *UsersCollector) Collect(metrics chan<- prometheus.Metric) {
 			})
 
 			for isAdmin, users := range groupedByAdmin {
-				c.Users.WithLabelValues(
+				c.UsersGauge.WithLabelValues(
 					authProvider,
 					strconv.FormatBool(!isDisabled),
 					strconv.FormatBool(isAdmin),

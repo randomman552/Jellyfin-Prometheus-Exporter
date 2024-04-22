@@ -10,14 +10,14 @@ import (
 type LibraryCollector struct {
 	Client api.JellyfinClient
 
-	Libraries *prometheus.GaugeVec
+	LirariesGauge *prometheus.GaugeVec
 }
 
 func NewLibraryCollector(client *api.JellyfinClient) *LibraryCollector {
 	return &LibraryCollector{
 		Client: *client,
 
-		Libraries: promauto.NewGaugeVec(prometheus.GaugeOpts{
+		LirariesGauge: promauto.NewGaugeVec(prometheus.GaugeOpts{
 			Name: "jellyfin_library_count",
 			Help: "Number of items in each Jellyfin library",
 		}, []string{
@@ -37,7 +37,7 @@ func (c *LibraryCollector) Describe(ch chan<- *prometheus.Desc) {
 func (c *LibraryCollector) Collect(metrics chan<- prometheus.Metric) {
 	virtualFolders := c.Client.GetVirtualFolders()
 
-	c.Libraries.Reset()
+	c.LirariesGauge.Reset()
 
 	for _, folder := range virtualFolders {
 		// Get items
@@ -57,7 +57,7 @@ func (c *LibraryCollector) Collect(metrics chan<- prometheus.Metric) {
 
 			// Finally, report to prometheus
 			for container, items := range groupedByContainer {
-				c.Libraries.WithLabelValues(folder.Name, folder.CollectionType, itemType, container).Set(float64(len(items)))
+				c.LirariesGauge.WithLabelValues(folder.Name, folder.CollectionType, itemType, container).Set(float64(len(items)))
 			}
 		}
 	}
