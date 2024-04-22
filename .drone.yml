@@ -4,7 +4,7 @@ name: Push Image
 
 trigger:
     branch:
-        - master
+        - main
     event:
         exclude:
             - pull_request
