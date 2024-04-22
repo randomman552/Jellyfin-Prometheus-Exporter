@@ -3,7 +3,6 @@ package collectors
 import (
 	"jellyfin-exporter/api"
 	"strconv"
-	"strings"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -71,11 +70,10 @@ func (c *SessionsCollector) CollectStreamData(sessions []api.JellyfinSession) {
 	})
 	for _, session := range sessions {
 		stream := session.NowPlayingItem
-		containers := strings.Split(stream.Container, ",")
 
 		c.Streams.WithLabelValues(
 			stream.Name,
-			containers[0],
+			stream.Container,
 			stream.Type,
 			stream.MediaType,
 			strconv.FormatBool(session.PlayState.IsPaused),
