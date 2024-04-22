@@ -28,11 +28,18 @@ type JellyfinSessionPlayState struct {
 
 // Type representing a Now Playing item for a Jellyfin session
 type JellyfinSessionNowPlayingItem struct {
-	Id        string `json:"Id"`
-	Name      string `json:"Name"`
-	Container string `json:"Container"`
-	Type      string `json:"Type"`
-	MediaType string `json:"MediaType"`
+	Id           string                `json:"Id"`
+	Name         string                `json:"Name"`
+	Container    string                `json:"Container"`
+	Type         string                `json:"Type"`
+	MediaType    string                `json:"MediaType"`
+	MediaStreams []JellyfinMediaStream `json:"MediaStreams"`
+}
+
+// Type representing a media stream from the Jellyfin API
+type JellyfinMediaStream struct {
+	Codec string `json:"Codec"`
+	Type  string `json:"Type"`
 }
 
 // Type representing a Virtual Folder returned from the Jellyfin API
