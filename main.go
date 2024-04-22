@@ -53,7 +53,6 @@ func run(c *cli.Context) error {
 
 	// Register collectors
 	collectors := []prometheus.Collector{
-		collectors.NewCounterCollector(),
 		collectors.NewSessionsCollector(apiClient),
 		collectors.NewLibraryCollector(apiClient),
 	}
