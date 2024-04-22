@@ -37,6 +37,8 @@ func (c *UsersCollector) Describe(ch chan<- *prometheus.Desc) {
 func (c *UsersCollector) Collect(metrics chan<- prometheus.Metric) {
 	users := c.Client.GetUsers()
 
+	c.Users.Reset()
+
 	// First group by auth provider
 	groupedByAuthProvider := GroupByProperty(users, func(user api.JellyfinUser) string {
 		return user.Policy.AuthenticationProvider

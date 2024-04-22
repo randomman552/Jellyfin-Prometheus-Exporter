@@ -37,6 +37,8 @@ func (c *LibraryCollector) Describe(ch chan<- *prometheus.Desc) {
 func (c *LibraryCollector) Collect(metrics chan<- prometheus.Metric) {
 	virtualFolders := c.Client.GetVirtualFolders()
 
+	c.Libraries.Reset()
+
 	for _, folder := range virtualFolders {
 		// Get items
 		itemResponse := c.Client.GetItems(folder.ItemId)
