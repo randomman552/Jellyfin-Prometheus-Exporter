@@ -38,7 +38,7 @@ func (c *JellyfinClient) NewRequest(method string, url string, body io.Reader) *
 }
 
 // Get sessions from the Jellyfin API `/Sessions` endpoint
-func (c *JellyfinClient) GetSessions() *[]JellyfinSession {
+func (c *JellyfinClient) GetSessions() []JellyfinSession {
 	client := &http.Client{}
 	request := c.NewRequest("GET", "/Sessions", nil)
 
@@ -59,11 +59,11 @@ func (c *JellyfinClient) GetSessions() *[]JellyfinSession {
 		panic(err)
 	}
 
-	return sessions
+	return *sessions
 }
 
 // Get a list of VirtualFolders from the Jellyfin API `/Library/VirtualFolders` endpoint
-func (c *JellyfinClient) GetVirtualFolders() *[]JellyfinVirtualFolder {
+func (c *JellyfinClient) GetVirtualFolders() []JellyfinVirtualFolder {
 	client := &http.Client{}
 	request := c.NewRequest("GET", "/Library/VirtualFolders", nil)
 
@@ -83,11 +83,11 @@ func (c *JellyfinClient) GetVirtualFolders() *[]JellyfinVirtualFolder {
 		panic(err)
 	}
 
-	return folders
+	return *folders
 }
 
 // Get items belonging to the VirtualFolder with the given Id
-func (c *JellyfinClient) GetItems(parentId string) *JellyfinItemsResponse {
+func (c *JellyfinClient) GetItems(parentId string) JellyfinItemsResponse {
 	client := &http.Client{}
 	request := c.NewRequest("GET", "/Items", nil)
 
@@ -107,5 +107,5 @@ func (c *JellyfinClient) GetItems(parentId string) *JellyfinItemsResponse {
 		panic(err)
 	}
 
-	return itemsResponse
+	return *itemsResponse
 }

@@ -49,8 +49,8 @@ func (c *SessionsCollector) Collect(metrics chan<- prometheus.Metric) {
 	// Get data
 	sessions := c.Client.GetSessions()
 
-	c.CollectActiveSessionData(*sessions)
-	c.CollectStreamData(*sessions)
+	c.CollectActiveSessionData(sessions)
+	c.CollectStreamData(sessions)
 }
 
 // Collect data about sessions
