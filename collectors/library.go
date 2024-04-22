@@ -24,6 +24,7 @@ func NewLibraryCollector(client *api.JellyfinClient) *LibraryCollector {
 			"library",
 			"libraryType",
 			"itemType",
+			"container",
 		}),
 	}
 }
@@ -42,12 +43,20 @@ func (c *LibraryCollector) Collect(metrics chan<- prometheus.Metric) {
 
 		// Group items by their type
 		// This is because a library can contain series, which can contain seasons, which can contain episodes...
-		groupedItems := GroupByProperty(itemResponse.Items, func(item api.JellyfinItem) string {
+		groupedByType := GroupByProperty(itemResponse.Items, func(item api.JellyfinItem) string {
 			return item.Type
 		})
 
-		for key, items := range groupedItems {
-			c.Libraries.WithLabelValues(folder.Name, folder.CollectionType, key).Set(float64(len(items)))
+		for itemType, items := range groupedByType {
+			// Group by container for stats on media containers
+			groupedByContainer := GroupByProperty(items, func(item api.JellyfinItem) string {
+				return item.Container
+			})
+
+			// Finally, report to prometheus
+			for container, items := range groupedByContainer {
+				c.Libraries.WithLabelValues(folder.Name, folder.CollectionType, itemType, container).Set(float64(len(items)))
+			}
 		}
 	}
 }
