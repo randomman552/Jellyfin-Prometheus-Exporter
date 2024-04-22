@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 )
 
 // Jellyfin API client
@@ -88,8 +89,13 @@ func (c *JellyfinClient) GetVirtualFolders() []JellyfinVirtualFolder {
 
 // Get items belonging to the VirtualFolder with the given Id
 func (c *JellyfinClient) GetItems(parentId string) JellyfinItemsResponse {
+	queryValues := url.Values{}
+	queryValues.Set("parentId", parentId)
+	queryValues.Set("recursive", "true")
+	url := "/Items?" + queryValues.Encode()
+
 	client := &http.Client{}
-	request := c.NewRequest("GET", "/Items", nil)
+	request := c.NewRequest("GET", url, nil)
 
 	response, err := client.Do(request)
 
