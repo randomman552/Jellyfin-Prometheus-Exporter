@@ -1,0 +1,41 @@
+kind: pipeline
+type: docker
+name: Push Image
+
+trigger:
+    branch:
+        - master
+    event:
+        exclude:
+            - pull_request
+            - promote
+
+steps:
+    # Docker image
+    - name: docker-image
+      image: plugins/docker
+      environment:
+          DOCKER_BUILDKIT: 1
+      settings:
+          username:
+              from_secret: docker-user
+          password:
+              from_secret: docker-key
+          repo: randomman552/jellyfin-prometheus-exporter
+          tags:
+              - latest
+
+    # Reporting
+    - name: build-reporter
+      image: randomman552/drone-build-reporter
+      settings:
+          gotify_token:
+              from_secret: gotify-token
+          gotify_url:
+              from_secret: gotify-url
+          discord_webhook:
+              from_secret: discord-webhook
+      when:
+          status:
+              - failure
+              - success
