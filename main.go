@@ -36,6 +36,13 @@ func main() {
 				"JELLYFIN_API_KEY",
 			},
 		},
+		&cli.StringFlag{
+			Name: "port",
+			EnvVars: []string{
+				"PORT",
+			},
+			Value: "2112",
+		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
@@ -68,9 +75,11 @@ func run(c *cli.Context) error {
 		}
 	}()
 
+	// Start hosting
+	port := c.String("port")
 	http.Handle("/metrics", promhttp.Handler())
 
-	log.Print("Listening on port 2112")
-	http.ListenAndServe(":2112", nil)
+	log.Print("Listening on port " + port)
+	http.ListenAndServe(":"+port, nil)
 	return nil
 }
