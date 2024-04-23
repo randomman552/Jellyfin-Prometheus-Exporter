@@ -31,6 +31,8 @@ A docker image for this exporter is provided [randomman552/jellyfin-prometheus-e
 
 An example docker compose is provided below
 ```yml
+version: "3"
+services:
   jellyfin-exporter:
     image: randomman552/jellyfin-prometheus-exporter
     restart: unless-stopped
