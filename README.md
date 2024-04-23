@@ -1,4 +1,6 @@
 # Jellyfin-Prometheus-Exporter
+[![Build Status](https://drone.ggrainger.uk/api/badges/randomman552/Jellyfin-Prometheus-Exporter/status.svg)](https://drone.ggrainger.uk/randomman552/Jellyfin-Prometheus-Exporter)
+
 A prometheus metrics exporter for Jellyfin.
 
 Jellyfin does provide a metrics endpoint of it's own, but it doesn't provide any useful metrics aside from memory usage.
