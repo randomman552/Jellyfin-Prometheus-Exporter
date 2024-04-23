@@ -1,8 +1,6 @@
 package api
 
 import (
-	"bytes"
-	"encoding/json"
 	"io"
 	"log"
 	"net/http"
@@ -39,104 +37,42 @@ func (c *JellyfinClient) NewRequest(method string, url string, body io.Reader) *
 }
 
 // Get sessions from the Jellyfin API `/Sessions` endpoint
-func (c *JellyfinClient) GetSessions() []JellyfinSession {
-	client := &http.Client{}
+func (c *JellyfinClient) GetSessions() *[]JellyfinSession {
 	request := c.NewRequest("GET", "/Sessions", nil)
 
-	response, err := client.Do(request)
-
-	if err != nil {
-		panic(err)
-	}
-
-	// Decode response
-	var sessions *[]JellyfinSession
-	buf := bytes.Buffer{}
-	buf.ReadFrom(response.Body)
-
-	err = json.Unmarshal(buf.Bytes(), &sessions)
-
-	if err != nil {
-		panic(err)
-	}
-
-	return *sessions
+	result := DoRequest[[]JellyfinSession](request)
+	return result
 }
 
 // Get a list of VirtualFolders from the Jellyfin API `/Library/VirtualFolders` endpoint
-func (c *JellyfinClient) GetVirtualFolders() []JellyfinVirtualFolder {
-	client := &http.Client{}
+func (c *JellyfinClient) GetVirtualFolders() *[]JellyfinVirtualFolder {
 	request := c.NewRequest("GET", "/Library/VirtualFolders", nil)
 
-	response, err := client.Do(request)
+	folders := DoRequest[[]JellyfinVirtualFolder](request)
 
-	if err != nil {
-		panic(err)
-	}
-
-	var folders *[]JellyfinVirtualFolder
-	buf := bytes.Buffer{}
-	buf.ReadFrom(response.Body)
-
-	err = json.Unmarshal(buf.Bytes(), &folders)
-
-	if err != nil {
-		panic(err)
-	}
-
-	return *folders
+	return folders
 }
 
 // Get items belonging to the VirtualFolder with the given Id
-func (c *JellyfinClient) GetItems(parentId string) JellyfinItemsResponse {
+func (c *JellyfinClient) GetItems(parentId string) *JellyfinItemsResponse {
 	queryValues := url.Values{}
 	queryValues.Set("parentId", parentId)
 	queryValues.Set("recursive", "true")
 	url := "/Items?" + queryValues.Encode()
 
-	client := &http.Client{}
 	request := c.NewRequest("GET", url, nil)
 
-	response, err := client.Do(request)
+	response := DoRequest[JellyfinItemsResponse](request)
 
-	if err != nil {
-		panic(err)
-	}
-
-	var itemsResponse *JellyfinItemsResponse
-	buf := bytes.Buffer{}
-	buf.ReadFrom(response.Body)
-
-	err = json.Unmarshal(buf.Bytes(), &itemsResponse)
-
-	if err != nil {
-		panic(err)
-	}
-
-	return *itemsResponse
+	return response
 }
 
 // Get a list of all users from the Jellyfin API
-func (c *JellyfinClient) GetUsers() []JellyfinUser {
+func (c *JellyfinClient) GetUsers() *[]JellyfinUser {
 	url := "/Users"
-	client := &http.Client{}
 	request := c.NewRequest("GET", url, nil)
 
-	response, err := client.Do(request)
+	users := DoRequest[[]JellyfinUser](request)
 
-	if err != nil {
-		panic(err)
-	}
-
-	var users *[]JellyfinUser
-	buf := bytes.Buffer{}
-	buf.ReadFrom(response.Body)
-
-	err = json.Unmarshal(buf.Bytes(), &users)
-
-	if err != nil {
-		panic(err)
-	}
-
-	return *users
+	return users
 }

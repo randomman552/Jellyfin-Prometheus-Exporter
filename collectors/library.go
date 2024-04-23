@@ -39,7 +39,11 @@ func (c *LibraryCollector) Collect(metrics chan<- prometheus.Metric) {
 
 	c.LibrariesGauge.Reset()
 
-	for _, folder := range virtualFolders {
+	if virtualFolders == nil {
+		return
+	}
+
+	for _, folder := range *virtualFolders {
 		// Get items
 		itemResponse := c.Client.GetItems(folder.ItemId)
 
