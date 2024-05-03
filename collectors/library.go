@@ -37,15 +37,22 @@ func (c *LibraryCollector) Describe(ch chan<- *prometheus.Desc) {
 func (c *LibraryCollector) Collect(metrics chan<- prometheus.Metric) {
 	virtualFolders := c.Client.GetVirtualFolders()
 
-	c.LibrariesGauge.Reset()
-
 	if virtualFolders == nil {
 		return
 	}
 
+	itemsPerFolder := make(map[string]api.JellyfinItemsResponse)
+
+	// Get items
 	for _, folder := range *virtualFolders {
-		// Get items
 		itemResponse := c.Client.GetItems(folder.ItemId)
+		itemsPerFolder[folder.ItemId] = *itemResponse
+	}
+
+	// Update metrics
+	c.LibrariesGauge.Reset()
+	for _, folder := range *virtualFolders {
+		itemResponse := itemsPerFolder[folder.ItemId]
 
 		// Group items by their type
 		// This is because a library can contain series, which can contain seasons, which can contain episodes...
