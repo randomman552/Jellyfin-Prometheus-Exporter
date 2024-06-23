@@ -35,6 +35,7 @@ func NewSessionsCollector(client *api.JellyfinClient) *SessionsCollector {
 			"mediaType",
 			"paused",
 			"playMethod",
+			"userName",
 		}),
 	}
 }
@@ -99,6 +100,7 @@ func (c *SessionsCollector) CollectStreamData(sessions []api.JellyfinSession) {
 			item.MediaType,
 			strconv.FormatBool(session.PlayState.IsPaused),
 			session.PlayState.PlayMethod,
+			session.UserName,
 		).Set(1)
 	}
 }
