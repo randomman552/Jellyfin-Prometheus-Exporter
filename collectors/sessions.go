@@ -1,6 +1,7 @@
 package collectors
 
 import (
+	"fmt"
 	"jellyfin-exporter/api"
 	"strconv"
 
@@ -93,9 +94,15 @@ func (c *SessionsCollector) CollectStreamData(sessions []api.JellyfinSession) {
 			}
 		}
 
+		// Add strings to make full name if we are dealing with an Episode
+		name := item.Name
+		if item.Type == "Episode" {
+			name = fmt.Sprintf("%s - %s Episode %d - %s", item.SeriesName, item.SeasonName, item.IndexNumber, item.Name)
+		}
+
 		c.ActiveStreamsGauge.WithLabelValues(
 			codec,
-			item.Name,
+			name,
 			item.Type,
 			item.MediaType,
 			strconv.FormatBool(session.PlayState.IsPaused),

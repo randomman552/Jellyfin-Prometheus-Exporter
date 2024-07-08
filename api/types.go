@@ -33,6 +33,9 @@ type JellyfinSessionNowPlayingItem struct {
 	Container    string                `json:"Container"`
 	Type         string                `json:"Type"`
 	MediaType    string                `json:"MediaType"`
+	SeriesName   string                `json:"SeriesName"`
+	SeasonName   string                `json:"SeasonName"`
+	IndexNumber  uint                  `json:"IndexNumber"`
 	MediaStreams []JellyfinMediaStream `json:"MediaStreams"`
 }
 
