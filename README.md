@@ -28,7 +28,7 @@ The exporter is configured using environment variables
 | `PORT`             |  2112   | The port to host on                                                           |
 
 ## Deployment
-A docker image for this exporter is provided [ghcr.io/randomman552/jellyfin-prometheus-exporter](ghcr.io/randomman552/jellyfin-prometheus-exporter).
+A docker image for this exporter is provided [ghcr.io/randomman552/jellyfin-prometheus-exporter](https://ghcr.io/randomman552/jellyfin-prometheus-exporter).
 
 An example docker compose is provided below
 ```yml
