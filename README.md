@@ -1,6 +1,4 @@
 # Jellyfin-Prometheus-Exporter
-[![Build Status](https://drone.ggrainger.uk/api/badges/randomman552/Jellyfin-Prometheus-Exporter/status.svg)](https://drone.ggrainger.uk/randomman552/Jellyfin-Prometheus-Exporter)
-
 A prometheus metrics exporter for Jellyfin.
 
 Jellyfin does provide a metrics endpoint of it's own, but it doesn't provide any useful metrics aside from memory usage.
@@ -30,14 +28,14 @@ The exporter is configured using environment variables
 | `PORT`             |  2112   | The port to host on                                                           |
 
 ## Deployment
-A docker image for this exporter is provided [randomman552/jellyfin-prometheus-exporter](https://hub.docker.com/repository/docker/randomman552/jellyfin-prometheus-exporter).
+A docker image for this exporter is provided [ghcr.io/randomman552/jellyfin-prometheus-exporter](ghcr.io/randomman552/jellyfin-prometheus-exporter).
 
 An example docker compose is provided below
 ```yml
 version: "3"
 services:
   jellyfin-exporter:
-    image: randomman552/jellyfin-prometheus-exporter
+    image: rghcr.io/randomman552/jellyfin-prometheus-exporter
     restart: unless-stopped
     environment:
       JELLYFIN_URL: https://jellyfin.example.com
