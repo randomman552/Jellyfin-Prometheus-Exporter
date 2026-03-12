@@ -6,8 +6,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      packages: write
+      
     steps:
-
     - name: Checkout repository with lfs
       uses: actions/checkout@v2
       with:
